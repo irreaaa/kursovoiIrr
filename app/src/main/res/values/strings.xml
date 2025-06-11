@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="hello">Привет!</string>
+    <string name="sign_in_subtitle">Заполните свои данные или продолжите через социальные медиа</string>
+    <string name="template_email">xyz@gmail.com</string>
+    <string name="email">Email</string>
+    <string name="enter">Войти</string>
+    <string name="sign_up_first">Вы впервые? Создать пользователя</string>
+    <string name="password">Пароль</string>
+    <string name="star_password">********</string>
+    <string name="recover">Восстановить</string>
+    <string name="recover_message">Мы отправили код восстановления пароля на вашу электронную почту.</string>
+    <string name="name">Ваше имя</string>
+    <string name="xxxxxxxx">xxxxxxxx</string>
+    <string name="enter_name">Введите имя</string>
+    <string name="enter_email">Введите почту</string>
+    <string name="enter_password">Введите пароль</string>
+    <string name="sign_up">Зарегистрироваться</string>
+    <string name="sign_in">Есть аккаунт? Войти</string>
+    <string name="registration">Регистрация</string>
+    <string name="send">Отправить</string>
+    <string name="miss_pass">Забыли пароль</string>
+    <string name="enter_your_email">Введите свою учетную запись для сброса</string>
+    <string name="incorrect_email">Неправильная почта</string>
+    <string name="password_template">***********</string>
+    <string name="incorrect_password">Неправильный пароль</string>
+    <string name="incorrect_name">Неправильное имя</string>
+    <string name="privacy_policy">Даю согласие на обработку персональных данных</string>
+    <string name="otp_proverka">OTP Проверка</string>
+    <string name="otp_text">Пожалуйста, проверьте свою электронную почту, чтоб увидеть код подтверждения</string>
+    <string name="send_again">Отправить заново</string>
+    <string name="welcome">ДОБРО ПОЖАЛОВАТЬ</string>
+    <string name="welcome_page2_title">Искусство дарить красоту</string>
+    <string name="welcome_page2_desc">Откройте мир изысканных букетов и уникальных композиций, созданных мастерами своего дела</string>
+    <string name="welcome_page3_title">Цветочный этикет высшего уровня</string>
+    <string name="welcome_page3_desc"> Изящность от выбора цветов до доставки вашего идеального подарка</string>
+    <string name="cart_button">Оформить заказ</string>
+
+</resources>
