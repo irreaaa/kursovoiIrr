@@ -22,6 +22,8 @@ import com.example.myapplication.R
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.myapplication.Cart
 import com.example.myapplication.Home
+import com.example.myapplication.Notif
+import com.example.myapplication.Profile
 
 
 @Composable
@@ -64,7 +66,7 @@ fun BottomProfile(navController: NavController) {
                             painterResource(R.drawable.new_home)
                         },
                         contentDescription = null,
-                        modifier = Modifier.size(35.dp)
+                        modifier = Modifier.size(30.dp)
                     )
                 }
 
@@ -100,7 +102,9 @@ fun BottomProfile(navController: NavController) {
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(40.dp)) {
-                IconButton(onClick = { }, modifier = Modifier.offset(y = 28.dp)) {
+                IconButton(onClick = {
+                    navController.navigate(Notif)
+                }, modifier = Modifier.offset(y = 28.dp)) {
                     Image(
                         painter = painterResource(R.drawable.new_notif),
                         contentDescription = null,
@@ -108,13 +112,16 @@ fun BottomProfile(navController: NavController) {
                     )
                 }
 
-                IconButton(onClick = { }, modifier = Modifier.offset(y = 28.dp)) {
+                IconButton(onClick = {
+                    navController.navigate(Profile)
+                }, modifier = Modifier.offset(y = 28.dp)) {
                     Image(
                         painter = painterResource(R.drawable.new_profile),
                         contentDescription = null,
                         modifier = Modifier.size(30.dp)
                     )
                 }
+
             }
         }
     }

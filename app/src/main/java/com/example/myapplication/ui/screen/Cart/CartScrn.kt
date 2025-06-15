@@ -69,7 +69,9 @@ fun CartScrn(navController: NavController) {
                                 Text("₽$deliveryCost", style = MaterialTheme.typography.titleMedium, color = Color.Black, fontWeight = FontWeight.Bold)
                             }
 
-                            Divider(thickness = 1.dp, color = Color.LightGray, modifier = Modifier.padding(top = 25.dp, bottom = 25.dp))
+                            Spacer(modifier = Modifier.height(10.dp))
+                            HorizontalDivider(modifier = (Modifier.padding(8.dp)), color = Color(0xFFe0adc7))
+                            Spacer(modifier = Modifier.height(10.dp))
 
                             Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()){
                                 Text("Итого:", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Color.Black)

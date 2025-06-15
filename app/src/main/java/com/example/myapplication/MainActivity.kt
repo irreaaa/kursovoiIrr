@@ -15,8 +15,10 @@ import com.example.myapplication.data.local.DataStoreOnBoarding
 import com.example.myapplication.ui.screen.Favourite.FavoriteScrn
 import com.example.myapplication.ui.screen.Home.HomeScreen
 import com.example.myapplication.ui.screen.Listing.ListingScrn
+import com.example.myapplication.ui.screen.Notif.NotifScrn
 import com.example.myapplication.ui.screen.Otp.OtpScrn
 import com.example.myapplication.ui.screen.Popular.PopularScrn
+import com.example.myapplication.ui.screen.Profile.ProfileMenuScreen
 import com.example.myapplication.ui.screen.RecoverPassword.RecoverPasswordScrn
 import com.example.myapplication.ui.screen.SignIn.SignInScrn
 import com.example.myapplication.ui.screen.SignUp.SignUpScrn
@@ -122,6 +124,19 @@ class MainActivity : ComponentActivity() {
                     composable<Cart> {
                         CartScrn(navController)
                     }
+
+                    composable<Profile> {
+                        ProfileMenuScreen(
+                            navController = navController,
+                            userName = "Эммануэль Кверти",
+                            authUseCase = authUseCase
+                        )
+                    }
+
+                    composable<Notif> {
+                        NotifScrn(navController)
+                    }
+
                 }
             }
         }
@@ -152,3 +167,5 @@ object Favourite
 object Listing
 @Serializable
 object Cart
+@Serializable
+object Notif

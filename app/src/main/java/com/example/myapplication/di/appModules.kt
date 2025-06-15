@@ -1,5 +1,6 @@
 package com.example.myapplication.di
 
+import com.example.myapplication.data.local.DataStoreOnBoarding
 import com.example.myapplication.data.repository.AuthRepository
 import com.example.myapplication.data.local.LocalStorage
 import com.example.myapplication.data.remote.AuthInterceptor
@@ -27,8 +28,9 @@ val appModules = module {
     single { RetrofitClient(get()) }
     single<Auth> { get<RetrofitClient>().auth }
     single<Sneackers> { get<RetrofitClient>().sneakers }
+    single { DataStoreOnBoarding(androidContext()) }
 
-    single { AuthUseCase(get(), get()) }
+    single { AuthUseCase(get(), get(), get()) }
     single { SneakersUseCase(get()) }
     single { FavoriteUseCase(get()) }
     single { TokenUseCase(get()) }

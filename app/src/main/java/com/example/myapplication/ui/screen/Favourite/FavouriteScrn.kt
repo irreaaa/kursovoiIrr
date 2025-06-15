@@ -2,6 +2,7 @@ package com.example.myapplication.ui.screen.Favourite
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -96,6 +97,21 @@ fun FavoriteScrn(
         when (favoritesState) {
             is NetworkResponseSneakers.Success -> {
                 val favorites = (favoritesState as NetworkResponseSneakers.Success<List<SneakersResponse>>).data
+
+                if (favorites.isEmpty()) {
+                    Column(
+                        modifier = Modifier.fillMaxSize().padding(paddingValues),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "В избранных пока пусто",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = Color(0xFFC189A5)
+                        )
+                    }
+                } else {
                 FavoriteContent(
                     modifier = Modifier.padding(paddingValues),
                     favorites = favorites,
@@ -106,6 +122,7 @@ fun FavoriteScrn(
                     },
                     navController = navController
                 )
+            }
             }
             is NetworkResponseSneakers.Error -> {
                 Box(modifier = Modifier.fillMaxSize()) {

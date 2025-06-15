@@ -1,5 +1,7 @@
 package com.example.myapplication.domain.usecase
 
+import android.content.Context
+import com.example.myapplication.data.local.DataStoreOnBoarding
 import com.example.myapplication.data.repository.AuthRepository
 import com.example.myapplication.data.local.LocalStorage
 import com.example.myapplication.data.remote.network.request.LoginRequest
@@ -13,7 +15,8 @@ import kotlinx.coroutines.flow.flow
 
 class AuthUseCase(
     private val localStorage: LocalStorage,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val dataStore: DataStoreOnBoarding
 ) {
     val token: Flow<String> by lazy {
         localStorage.tokenFlow
@@ -51,4 +54,9 @@ class AuthUseCase(
             emit(NetworkResponse.Error(e.message ?: "Unknown Error"))
         }
     }
+
+        suspend fun logout(context: Context) {
+            dataStore.clearAuthState() // например, удаляем токен и флаг авторизации
+        }
+
 }
