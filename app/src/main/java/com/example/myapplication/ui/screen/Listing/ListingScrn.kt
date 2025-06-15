@@ -54,13 +54,13 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun ListingScrn(
     navController: NavController,
-    categories: List<String> = listOf("Все", "Outdoor", "Tennis")
+    categories: List<String> = listOf("Все", "Монобукеты", "Сборные букеты", "Букеты в коробке")
 ) {
     val viewModel: PopularViewModel = koinViewModel()
 
     val defaultCategory = navController.previousBackStackEntry
         ?.savedStateHandle
-        ?.get<String>("selectedCategory") ?: "Outdoor"
+        ?.get<String>("selectedCategory") ?: "Монобукеты"
 
     var selectedCategory by remember { mutableStateOf(defaultCategory) }
 
@@ -141,15 +141,15 @@ fun CategoryTabs(
                         shape = RoundedCornerShape(7.dp)
                     )
                     .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .width(110.dp)
+                    .width(175.dp)
                     .height(30.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = category,
                     color = if (category == selectedCategory) Color.White else Color.Black,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Light
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
                 )
             }
         }

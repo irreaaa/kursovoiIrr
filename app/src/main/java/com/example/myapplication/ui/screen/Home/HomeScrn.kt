@@ -139,7 +139,7 @@ fun HomeScreenContent(paddingValues: PaddingValues, viewModel: PopularViewModel,
             )
 
             LazyRow {
-                items(listOf("Все", "Outdoor", "Tennis")) { category ->
+                items(listOf("Все", "Монобукеты", "Букеты в коробке", "Сборные букеты")) { category ->
                     Button(
                         onClick = {
                             navController.currentBackStackEntry?.savedStateHandle?.set("selectedCategory", category)
@@ -148,14 +148,14 @@ fun HomeScreenContent(paddingValues: PaddingValues, viewModel: PopularViewModel,
                         modifier = Modifier
                             .padding(end = 16.dp)
                             .height(40.dp)
-                            .width(115.dp),
+                            .width(175.dp),
                         shape = RoundedCornerShape(7.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.White,
                             contentColor = Color.Black
                         )
                     ) {
-                        Text(text = category, fontSize = 15.sp, fontWeight = FontWeight.Light)
+                        Text(text = category, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                     }
                 }
             }

@@ -3,7 +3,6 @@ package com.example.myapplication.ui.screen.Home
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -32,11 +32,12 @@ import com.example.myapplication.R
 import com.example.myapplication.data.remote.network.response.SneakersResponse
 import com.example.myapplication.ui.theme.MatuleTheme
 
+@Composable
 fun getDrawableId(imageName: String): Int {
-    return when (imageName) {
-        "sneakers" -> R.drawable.flowers
-        else -> R.drawable.peonia
-    }
+    val context = LocalContext.current
+    val id = context.resources.getIdentifier(imageName, "drawable", context.packageName)
+    Log.d("ProductItem", "Image name: $imageName, resolved id: $id")
+    return id
 }
 
 @Composable
@@ -46,10 +47,12 @@ fun ProductItem(
     onAddToCart: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val imageRes = getDrawableId(sneaker.imageUrl)
+
     Column(
         modifier = modifier
             .width(160.dp)
-            .height((160.dp * 1.5f).value.dp)
+            .height(240.dp)
             .clip(RoundedCornerShape(15.dp))
             .background(Color.White),
         verticalArrangement = Arrangement.SpaceBetween
@@ -60,7 +63,7 @@ fun ProductItem(
                 .fillMaxWidth()
         ) {
             Image(
-                painter = painterResource(id = getDrawableId(sneaker.imageUrl)),
+                painter = painterResource(id = imageRes),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()
@@ -77,7 +80,9 @@ fun ProductItem(
                     .padding(8.dp)
             ) {
                 Image(
-                    painter = painterResource(if (sneaker.isFavorite) R.drawable.new_heart else R.drawable.new_empty_heart),
+                    painter = painterResource(
+                        if (sneaker.isFavorite) R.drawable.new_heart else R.drawable.new_empty_heart
+                    ),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp)
                 )
@@ -85,7 +90,9 @@ fun ProductItem(
         }
 
         Column(
-            modifier = Modifier.weight(0.3f)
+            modifier = Modifier
+                .weight(0.3f)
+                .padding(horizontal = 8.dp)
         ) {
             Text(
                 text = sneaker.category.uppercase(),
