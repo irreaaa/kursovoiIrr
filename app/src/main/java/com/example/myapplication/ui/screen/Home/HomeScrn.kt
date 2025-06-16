@@ -88,45 +88,6 @@ fun HomeScreenContent(paddingValues: PaddingValues, viewModel: PopularViewModel,
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp)
     ) {
-//        Row(
-//            modifier = Modifier
-//                .padding(horizontal = 22.dp, vertical = 16.dp)
-//                .fillMaxWidth(),
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            TextField(
-//                modifier = Modifier
-//                    .weight(1f)
-//                    .padding(top = 16.dp, bottom = 24.dp),
-//                value = message.value,
-//                onValueChange = { message.value = it },
-//                placeholder = { Text("Поиск") },
-//                leadingIcon = {
-//                    Icon(
-//                        painter = painterResource(R.drawable.finder),
-//                        contentDescription = null,
-//                        Modifier.size(20.dp)
-//                    )
-//                },
-//                shape = RoundedCornerShape(12.dp),
-//                colors = TextFieldDefaults.colors(
-//                    focusedContainerColor = MatuleTheme.colors.block,
-//                    unfocusedContainerColor = MatuleTheme.colors.background,
-//                    unfocusedIndicatorColor = Color.Transparent,
-//                    focusedIndicatorColor = Color.Transparent
-//                )
-//            )
-//
-//            Spacer(modifier = Modifier.width(8.dp))
-//
-//            IconButton(onClick = { }) {
-//                Image(
-//                    painter = painterResource(R.drawable.padj),
-//                    contentDescription = "",
-//                    modifier = Modifier.size(100.dp)
-//                )
-//            }
-//        }
 
         Spacer(modifier = Modifier.width(20.dp).height(45.dp))
 
@@ -147,15 +108,15 @@ fun HomeScreenContent(paddingValues: PaddingValues, viewModel: PopularViewModel,
                         },
                         modifier = Modifier
                             .padding(end = 16.dp)
-                            .height(40.dp)
-                            .width(175.dp),
+                            .height(50.dp)
+                            .width(205.dp),
                         shape = RoundedCornerShape(7.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.White,
-                            contentColor = Color.Black
+                            containerColor = Color(0xFFFFE5F2),
+                            contentColor = Color(0xFF660033)
                         )
                     ) {
-                        Text(text = category, fontSize = 15.sp, fontWeight = FontWeight.Medium)
+                        Text(text = category, fontSize = 18.sp, fontWeight = FontWeight.Medium)
                     }
                 }
             }
@@ -184,7 +145,7 @@ fun HomeScreenContent(paddingValues: PaddingValues, viewModel: PopularViewModel,
                             modifier = Modifier.clickable {
                                 navController.navigate(route = Popular)
                             },
-                            fontSize = 12.sp,
+                            fontSize = 15.sp,
                             color = MatuleTheme.colors.accent
                         )
                     }
@@ -204,8 +165,7 @@ fun HomeScreenContent(paddingValues: PaddingValues, viewModel: PopularViewModel,
                                 },
                                 onAddToCart = {
 
-                                },
-                                modifier = Modifier.width(160.dp)
+                                }
                             )
                         }
                     }

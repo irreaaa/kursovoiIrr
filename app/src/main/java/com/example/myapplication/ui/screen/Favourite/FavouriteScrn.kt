@@ -171,7 +171,7 @@ fun FavoriteContent(
                 onAddToCart = {},
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(0.85f)
+                    .aspectRatio(0.65f)
             )
         }
     }

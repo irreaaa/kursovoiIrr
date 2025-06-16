@@ -121,7 +121,7 @@ fun PopularContent(
                 onAddToCart = { onAddToCart(sneaker) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(0.85f)
+                    .aspectRatio(0.65f)
             )
         }
     }

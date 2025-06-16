@@ -137,7 +137,7 @@ fun CategoryTabs(
                     .clickable { onCategorySelected(category) }
                     .background(
                         color = if (category == selectedCategory) MatuleTheme.colors.accent
-                        else Color.White,
+                        else Color(0xFFFFE5F2),
                         shape = RoundedCornerShape(7.dp)
                     )
                     .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -147,7 +147,7 @@ fun CategoryTabs(
             ) {
                 Text(
                     text = category,
-                    color = if (category == selectedCategory) Color.White else Color.Black,
+                    color = if (category == selectedCategory) Color(0xFFFFE5F2) else Color(0xFF660033),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -193,7 +193,7 @@ fun ListingContent(
                             viewModel.toggleFavorite(id, isFavorite)
                         },
                         onAddToCart = {},
-                        modifier = Modifier.aspectRatio(0.85f)
+                        modifier = Modifier.aspectRatio(0.65f)
                     )
                 }
             }
