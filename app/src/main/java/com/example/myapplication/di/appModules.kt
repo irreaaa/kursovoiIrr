@@ -33,6 +33,7 @@ val appModules = module {
     single { AuthUseCase(get(), get(), get()) }
     single { SneakersUseCase(get()) }
     single { FavoriteUseCase(get()) }
+    single { CartUseCase(get()) }
     single { TokenUseCase(get()) }
     single { OnBoardingUseCase(get()) }
 

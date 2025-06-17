@@ -1,13 +1,11 @@
 package com.example.myapplication.ui.screen.Home
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -45,7 +43,7 @@ fun getDrawableId(imageName: String): Int {
 fun ProductItem(
     sneaker: SneakersResponse,
     onFavoriteClick: (Int, Boolean) -> Unit,
-    onAddToCart: () -> Unit,
+    onAddToCart: (Int, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val imageRes = getDrawableId(sneaker.imageUrl)
@@ -87,7 +85,7 @@ fun ProductItem(
                         if (sneaker.isFavorite) R.drawable.new_heart else R.drawable.new_empty_heart
                     ),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(26.dp)
                 )
             }
         }
@@ -133,13 +131,15 @@ fun ProductItem(
 
 
         IconButton(
-            onClick = onAddToCart,
+            onClick = { onAddToCart(sneaker.id, !sneaker.inCart) },
             modifier = Modifier
                 .align(Alignment.End)
                 .size(40.dp)
         ) {
             Image(
-                painter = painterResource(R.drawable.add_b),
+                painter = painterResource(
+                    if (sneaker.inCart) R.drawable.done else R.drawable.add_b
+                ),
                 contentDescription = null,
                 modifier = Modifier.size(40.dp)
             )

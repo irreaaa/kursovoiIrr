@@ -45,6 +45,7 @@ fun FavoriteScrn(
     viewModel: PopularViewModel = koinViewModel()
 ) {
     val favoritesState by viewModel.favoritesState.collectAsState()
+    val cartState by viewModel.cartState.collectAsState()
 
 
     LaunchedEffect(key1 = Unit) {
@@ -120,6 +121,9 @@ fun FavoriteScrn(
                     onFavoriteClick = { id, isFavorite ->
                         viewModel.toggleFavorite(id, isFavorite)
                     },
+                    inCartClick = {id, inCart ->
+                        viewModel.toggleCart(id, inCart)
+                    },
                     navController = navController
                 )
             }
@@ -150,6 +154,7 @@ fun FavoriteContent(
     favorites: List<SneakersResponse>,
     onItemClick: (Int) -> Unit,
     onFavoriteClick: (Int, Boolean) -> Unit,
+    inCartClick: (Int, Boolean) -> Unit,
     navController: NavController
 ) {
     LazyVerticalGrid(
@@ -168,7 +173,9 @@ fun FavoriteContent(
                 onFavoriteClick = { _, isFavorite ->
                     onFavoriteClick(sneaker.id, isFavorite)
                 },
-                onAddToCart = {},
+                onAddToCart = {_, inCart ->
+                    inCartClick(sneaker.id, inCart)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(0.65f)

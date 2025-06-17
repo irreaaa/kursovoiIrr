@@ -128,7 +128,7 @@ class MainActivity : ComponentActivity() {
                     composable<Profile> {
                         ProfileMenuScreen(
                             navController = navController,
-                            userName = "Эммануэль Кверти",
+                            userName = "Пользователь",
                             authUseCase = authUseCase
                         )
                     }

@@ -192,7 +192,9 @@ fun ListingContent(
                         onFavoriteClick = { id, isFavorite ->
                             viewModel.toggleFavorite(id, isFavorite)
                         },
-                        onAddToCart = {},
+                        onAddToCart = {id, inCart ->
+                            viewModel.toggleCart(id, inCart)
+                        },
                         modifier = Modifier.aspectRatio(0.65f)
                     )
                 }

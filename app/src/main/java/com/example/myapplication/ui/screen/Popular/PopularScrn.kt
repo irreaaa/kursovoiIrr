@@ -30,7 +30,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.myapplication.Favourite
 import com.example.myapplication.R
 import com.example.myapplication.data.remote.network.response.NetworkResponseSneakers
 import com.example.myapplication.data.remote.network.response.SneakersResponse
@@ -79,7 +78,7 @@ fun PopularScrn(navController: NavController, viewModel: PopularViewModel = koin
                 PopularContent(
                     sneakers = (sneakersState as NetworkResponseSneakers.Success).data,
                     onFavoriteClick = viewModel::toggleFavorite,
-                    onAddToCart = {},
+                    onAddToCart = viewModel::toggleCart,
                     navController = navController,
                     modifier = Modifier.padding(paddingValues)
                 )
@@ -102,7 +101,7 @@ fun PopularScrn(navController: NavController, viewModel: PopularViewModel = koin
 fun PopularContent(
     sneakers: List<SneakersResponse>,
     onFavoriteClick: (Int, Boolean) -> Unit,
-    onAddToCart: (SneakersResponse) -> Unit,
+    onAddToCart: (Int, Boolean) -> Unit,
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
@@ -118,7 +117,7 @@ fun PopularContent(
                 sneaker = sneaker,
                 //onItemClick = {  },
                 onFavoriteClick = onFavoriteClick,
-                onAddToCart = { onAddToCart(sneaker) },
+                onAddToCart = onAddToCart,
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(0.65f)

@@ -1,6 +1,12 @@
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -11,6 +17,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.myapplication.R
+import com.example.myapplication.data.remote.network.response.NetworkResponseSneakers
+import com.example.myapplication.data.remote.network.response.SneakersResponse
+import com.example.myapplication.ui.screen.Home.ProductItem
 import com.example.myapplication.ui.screen.Popular.PopularViewModel
 import com.example.myapplication.ui.screen.common.CommonButton
 import com.example.myapplication.ui.screen.component.AuthButton
@@ -22,7 +31,17 @@ const val deliveryCost = 60.20f
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CartScrn(navController: NavController) {
+fun CartScrn(
+    navController: NavController,
+    viewModel: PopularViewModel = koinViewModel()
+) {
+
+    val favoritesState by viewModel.favoritesState.collectAsState()
+    val cartState by viewModel.cartState.collectAsState()
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.fetchCart()
+    }
 
     Scaffold(
         topBar = {
@@ -90,12 +109,93 @@ fun CartScrn(navController: NavController) {
                 }
             }
         }
-    ) { innerPadding ->
-        CartContent(innerPadding)
+    ) { paddingValues ->
+        when (cartState) {
+            is NetworkResponseSneakers.Success -> {
+                val carts = (cartState as NetworkResponseSneakers.Success<List<SneakersResponse>>).data
+
+                if (carts.isEmpty()) {
+                    Column(
+                        modifier = Modifier.fillMaxSize().padding(paddingValues),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "В корзине пока пусто",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = Color(0xFFC189A5)
+                        )
+                    }
+                } else {
+                    CartContent(
+                        modifier = Modifier.padding(paddingValues),
+                        cart = carts,
+                        onItemClick = { id ->
+                        },
+                        onFavoriteClick = { id, isFavorite ->
+                            viewModel.toggleFavorite(id, isFavorite)
+                        },
+                        inCartClick = {id, inCart ->
+                            viewModel.toggleCart(id, inCart)
+                        },
+                        navController = navController
+                    )
+                }
+            }
+            is NetworkResponseSneakers.Error -> {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Text(
+                        text = "Ошибка загрузки",
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
+            NetworkResponseSneakers.Loading -> {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Text(
+                        text = "Загрузка...",
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
+        }
     }
 }
 
 @Composable
-fun CartContent(paddingValues: PaddingValues) {
+fun CartContent(
+    modifier: Modifier = Modifier,
+    cart: List<SneakersResponse>,
+    onItemClick: (Int) -> Unit,
+    onFavoriteClick: (Int, Boolean) -> Unit,
+    inCartClick: (Int, Boolean) -> Unit,
+    navController: NavController
+    ) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(
+                items = cart,
+                key = { it.id }
+            ) { sneaker ->
+                ProductItem(
+                    sneaker = sneaker,
+                    onFavoriteClick = { _, isFavorite ->
+                        onFavoriteClick(sneaker.id, isFavorite)
+                    },
+                    onAddToCart = {_, inCart ->
+                        inCartClick(sneaker.id, inCart)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(0.65f)
+                )
+            }
+        }
 
 }

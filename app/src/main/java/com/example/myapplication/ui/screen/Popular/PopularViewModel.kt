@@ -7,13 +7,16 @@ import com.example.myapplication.domain.usecase.SneakersUseCase
 import com.example.myapplication.data.remote.network.response.NetworkResponse
 import com.example.myapplication.data.remote.network.response.NetworkResponseSneakers
 import com.example.myapplication.data.remote.network.response.SneakersResponse
+import com.example.myapplication.domain.usecase.CartUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class PopularViewModel(
     private val sneakersUseCase: SneakersUseCase,
-    private val favoriteUseCase: FavoriteUseCase
+    private val favoriteUseCase: FavoriteUseCase,
+    private val cartUseCase: CartUseCase,
+
 ) : ViewModel() {
 
     private val _sneakersState = MutableStateFlow<NetworkResponseSneakers<List<SneakersResponse>>>(
@@ -23,6 +26,10 @@ class PopularViewModel(
     private val _favoritesState = MutableStateFlow<NetworkResponseSneakers<List<SneakersResponse>>>(
         NetworkResponseSneakers.Loading)
     val favoritesState: StateFlow<NetworkResponseSneakers<List<SneakersResponse>>> = _favoritesState
+
+    private val _cartState = MutableStateFlow<NetworkResponseSneakers<List<SneakersResponse>>>(
+        NetworkResponseSneakers.Loading)
+    val cartState: StateFlow<NetworkResponseSneakers<List<SneakersResponse>>> = _cartState
 
     private var currentCategory: String = "Все"
 
@@ -34,6 +41,18 @@ class PopularViewModel(
                 _favoritesState.value = NetworkResponseSneakers.Success(modified)
             } else {
                 _favoritesState.value = result
+            }
+        }
+    }
+
+    fun fetchCart() {
+        viewModelScope.launch {
+            val result = cartUseCase.getCart()
+            if (result is NetworkResponseSneakers.Success) {
+                val modified = result.data.map { it.copy(inCart = true) }
+                _cartState.value = NetworkResponseSneakers.Success(modified)
+            } else {
+                _cartState.value = result
             }
         }
     }
@@ -56,6 +75,16 @@ class PopularViewModel(
         }
     }
 
+    fun toggleCart(sneakerId: Int, inCart: Boolean) {
+        viewModelScope.launch {
+            val result = cartUseCase.addToCart(sneakerId, inCart)
+            if (result is NetworkResponse.Success) {
+                fetchCart()
+                fetchSneakersByCategory(currentCategory)
+            }
+        }
+    }
+
     private suspend fun mergeSneakersWithFavorites(category: String): NetworkResponseSneakers<List<SneakersResponse>> {
         val allSneakersResult = sneakersUseCase.getAllSneakers()
         val favoritesResult = favoriteUseCase.getFavorites()
@@ -68,6 +97,31 @@ class PopularViewModel(
 
             val merged = allSneakers.map {
                 it.copy(isFavorite = it.id in favoriteIds)
+            }
+
+            val filtered = when (category) {
+                "Все" -> merged
+                "Популярное" -> merged.filter { it.isPopular }
+                else -> merged.filter { it.category.equals(category, ignoreCase = true) }
+            }
+
+            return NetworkResponseSneakers.Success(filtered)
+        }
+
+        return NetworkResponseSneakers.Error("Ошибка при получении данных с сервера")
+    }
+
+    private suspend fun mergeSneakersWithCart(category: String): NetworkResponseSneakers<List<SneakersResponse>> {
+        val allSneakersResult = sneakersUseCase.getAllSneakers()
+        val cartResult = cartUseCase.getCart()
+        if (allSneakersResult is NetworkResponseSneakers.Success &&
+            cartResult is NetworkResponseSneakers.Success) {
+
+            val allSneakers = allSneakersResult.data
+            val cartIds = cartResult.data.map { it.id }.toSet()
+
+            val merged = allSneakers.map {
+                it.copy(inCart = it.id in cartIds)
             }
 
             val filtered = when (category) {
