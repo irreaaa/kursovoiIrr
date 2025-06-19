@@ -61,7 +61,7 @@ fun CartItemCard(
             .pointerInput(Unit) {
                 detectHorizontalDragGestures(
                     onDragEnd = {
-                        if (offsetX < -180f) {
+                        if (offsetX < -230f) {
                             onDeleteClick(sneaker.id)
                         } else {
                             offsetX = 0f
@@ -70,7 +70,7 @@ fun CartItemCard(
                 ) { change, dragAmount ->
                     change.consume()
                     offsetX += dragAmount
-                    offsetX = offsetX.coerceIn(-250f, 0f)
+                    offsetX = offsetX.coerceIn(-500f, 0f)
                 }
             }
     ) {

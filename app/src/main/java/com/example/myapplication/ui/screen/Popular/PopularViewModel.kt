@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.screen.Popular
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.domain.usecase.FavoriteUseCase
@@ -83,11 +84,12 @@ class PopularViewModel(
                 if (inCart) {
                     sneakersRepository.addToCart(sneakerId, true)
                 } else {
-                    sneakersRepository.removeFromCart(sneakerId, false)
+                    sneakersRepository.removeFromCart(sneakerId)
                 }
+                _cartState.value = NetworkResponseSneakers.Loading
                 fetchCart()
             } catch (e: Exception) {
-
+                Log.e("Cart", "Ошибка при удалении из корзины", e)
             }
         }
     }

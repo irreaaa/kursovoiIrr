@@ -6,18 +6,24 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.domain.usecase.AuthUseCase
 import com.example.myapplication.data.local.DataStoreOnBoarding
+import com.example.myapplication.data.remote.network.response.NetworkResponseSneakers
+import com.example.myapplication.ui.screen.Cart.OrderConfirmationScreen
 import com.example.myapplication.ui.screen.Favourite.FavoriteScrn
 import com.example.myapplication.ui.screen.Home.HomeScreen
 import com.example.myapplication.ui.screen.Listing.ListingScrn
 import com.example.myapplication.ui.screen.Notif.NotifScrn
 import com.example.myapplication.ui.screen.Otp.OtpScrn
 import com.example.myapplication.ui.screen.Popular.PopularScrn
+import com.example.myapplication.ui.screen.Popular.PopularViewModel
 import com.example.myapplication.ui.screen.Profile.ProfileMenuScreen
 import com.example.myapplication.ui.screen.RecoverPassword.RecoverPasswordScrn
 import com.example.myapplication.ui.screen.SignIn.SignInScrn
@@ -137,6 +143,21 @@ class MainActivity : ComponentActivity() {
                         NotifScrn(navController)
                     }
 
+                    composable<OrderConfirmation> {
+                        val viewModel: PopularViewModel = koinViewModel()
+                        val cartState = viewModel.cartState.collectAsState().value
+                        val cartCounts = remember { mutableStateMapOf<Int, Int>() }
+
+                        if (cartState is NetworkResponseSneakers.Success) {
+                            OrderConfirmationScreen(
+                                navController = navController,
+                                cartItems = cartState.data,
+                                cartCounts = cartCounts,
+                                deliveryCost = 60.20f
+                            )
+                        }
+                    }
+
                 }
             }
         }
@@ -169,3 +190,5 @@ object Listing
 object Cart
 @Serializable
 object Notif
+@Serializable
+object OrderConfirmation

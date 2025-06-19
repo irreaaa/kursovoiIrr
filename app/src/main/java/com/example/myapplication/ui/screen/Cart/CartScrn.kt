@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.myapplication.OrderConfirmation
 import com.example.myapplication.R
 import com.example.myapplication.data.remote.network.response.NetworkResponseSneakers
 import com.example.myapplication.data.remote.network.response.SneakersResponse
@@ -115,7 +116,9 @@ fun CartScrn(
 
 
                             AuthButton(
-                                onClick = {}
+                                onClick = {
+                                    navController.navigate(route = OrderConfirmation)
+                                }
                             ) {
                                 Text(stringResource(R.string.cart_button))
                             }

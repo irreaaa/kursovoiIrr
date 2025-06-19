@@ -14,7 +14,7 @@ class CartUseCase (private  val sneakersRepository: SneakersRepository){
         return sneakersRepository.addToCart(sneakerId, inCart)
     }
 
-    suspend fun removeFromCart(sneakerId: Int, inCart: Boolean): NetworkResponse<Unit>{
-        return sneakersRepository.removeFromCart(sneakerId, inCart)
+    suspend fun removeFromCart(sneakerId: Int): NetworkResponse<Unit> {
+        return sneakersRepository.removeFromCart(sneakerId)
     }
 }

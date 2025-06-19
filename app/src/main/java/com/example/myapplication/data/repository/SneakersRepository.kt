@@ -68,16 +68,16 @@ class SneakersRepository(private val sneakersApi: Sneackers) {
         }
     }
 
-    suspend fun removeFromCart(sneakerId: Int, inCart: Boolean): NetworkResponse<Unit> {
+    suspend fun removeFromCart(sneakerId: Int): NetworkResponse<Unit> {
         return try {
-            if(inCart){
-                sneakersApi.removeFromCart(sneakerId)
-            }
+            sneakersApi.removeFromCart(sneakerId)
             NetworkResponse.Success(Unit)
-        } catch (e:Exception) {
+        } catch (e: Exception) {
             NetworkResponse.Error(e.message ?: "Failed to remove from cart")
         }
     }
+
+
 
     suspend fun getSneakersByCategory(category: String): NetworkResponseSneakers<List<SneakersResponse>> {
         return try {
