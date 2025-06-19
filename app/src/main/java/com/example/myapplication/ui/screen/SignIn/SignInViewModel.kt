@@ -37,6 +37,7 @@ class SignInViewModel(val authUseCase: AuthUseCase): ViewModel() {
     fun signIn() {
         viewModelScope.launch {
             val loginRequest = LoginRequest(
+                userName = signInState.value.userName,
                 email = signInState.value.email,
                 password = signInState.value.password
             )

@@ -35,5 +35,6 @@
     <string name="welcome_page3_title">Цветочный этикет высшего уровня</string>
     <string name="welcome_page3_desc"> Изящность от выбора цветов до доставки вашего идеального подарка</string>
     <string name="cart_button">Оформить заказ</string>
+    <string name="cart_confirm_button">Подтвердить заказ</string>
 
 </resources>

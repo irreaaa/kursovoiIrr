@@ -56,7 +56,6 @@ class AuthUseCase(
     }
 
         suspend fun logout(context: Context) {
-            dataStore.clearAuthState() // например, удаляем токен и флаг авторизации
+            dataStore.clearAuthState()
         }
-
 }
