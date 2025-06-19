@@ -1,12 +1,13 @@
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,14 +20,13 @@ import androidx.navigation.NavController
 import com.example.myapplication.R
 import com.example.myapplication.data.remote.network.response.NetworkResponseSneakers
 import com.example.myapplication.data.remote.network.response.SneakersResponse
-import com.example.myapplication.ui.screen.Home.ProductItem
+import com.example.myapplication.ui.screen.Cart.CartItemCard
 import com.example.myapplication.ui.screen.Popular.PopularViewModel
-import com.example.myapplication.ui.screen.common.CommonButton
 import com.example.myapplication.ui.screen.component.AuthButton
 import com.example.myapplication.ui.theme.MatuleTheme
 import org.koin.androidx.compose.koinViewModel
 
-val purchaseSum = 100.50f
+
 const val deliveryCost = 60.20f
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,6 +38,22 @@ fun CartScrn(
 
     val favoritesState by viewModel.favoritesState.collectAsState()
     val cartState by viewModel.cartState.collectAsState()
+
+    val cartCounts = remember { mutableStateMapOf<Int, Int>() }
+
+    val purchaseSum = when (cartState) {
+        is NetworkResponseSneakers.Success -> {
+            val carts = (cartState as NetworkResponseSneakers.Success<List<SneakersResponse>>).data
+            carts.sumOf { item ->
+                val count = cartCounts[item.id] ?: 1
+                (item.price ?: 0f).toDouble() * count.toDouble()
+             }.toFloat()
+
+        }
+        else -> 0f
+    }
+
+
 
     LaunchedEffect(key1 = Unit) {
         viewModel.fetchCart()
@@ -139,7 +155,8 @@ fun CartScrn(
                         inCartClick = {id, inCart ->
                             viewModel.toggleCart(id, inCart)
                         },
-                        navController = navController
+                        navController = navController,
+                        cartCounts
                     )
                 }
             }
@@ -170,32 +187,29 @@ fun CartContent(
     onItemClick: (Int) -> Unit,
     onFavoriteClick: (Int, Boolean) -> Unit,
     inCartClick: (Int, Boolean) -> Unit,
-    navController: NavController
+    navController: NavController,
+    cartCounts: MutableMap<Int, Int>
+) {
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(bottom = 150.dp)
     ) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(
-                items = cart,
-                key = { it.id }
-            ) { sneaker ->
-                ProductItem(
-                    sneaker = sneaker,
-                    onFavoriteClick = { _, isFavorite ->
-                        onFavoriteClick(sneaker.id, isFavorite)
-                    },
-                    onAddToCart = {_, inCart ->
-                        inCartClick(sneaker.id, inCart)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(0.65f)
-                )
-            }
-        }
+        items(
+            items = cart,
+            key = { it.id }
+        ) { sneaker ->
+            CartItemCard(
+                sneaker = sneaker,
+                count = cartCounts[sneaker.id] ?: 1,
+                onQuantityChanged = { id, newCount ->
+                    cartCounts[id] = newCount
+                },
+                onDeleteClick = { id ->
+                    inCartClick(id, false)
+                    cartCounts.remove(id)
+                }
+            )
 
+        }
+    }
 }

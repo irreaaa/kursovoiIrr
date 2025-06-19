@@ -7,6 +7,7 @@ import com.example.myapplication.domain.usecase.SneakersUseCase
 import com.example.myapplication.data.remote.network.response.NetworkResponse
 import com.example.myapplication.data.remote.network.response.NetworkResponseSneakers
 import com.example.myapplication.data.remote.network.response.SneakersResponse
+import com.example.myapplication.data.repository.SneakersRepository
 import com.example.myapplication.domain.usecase.CartUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,6 +17,7 @@ class PopularViewModel(
     private val sneakersUseCase: SneakersUseCase,
     private val favoriteUseCase: FavoriteUseCase,
     private val cartUseCase: CartUseCase,
+    private val sneakersRepository: SneakersRepository
 
 ) : ViewModel() {
 
@@ -77,13 +79,19 @@ class PopularViewModel(
 
     fun toggleCart(sneakerId: Int, inCart: Boolean) {
         viewModelScope.launch {
-            val result = cartUseCase.addToCart(sneakerId, inCart)
-            if (result is NetworkResponse.Success) {
+            try {
+                if (inCart) {
+                    sneakersRepository.addToCart(sneakerId, true)
+                } else {
+                    sneakersRepository.removeFromCart(sneakerId, false)
+                }
                 fetchCart()
-                fetchSneakersByCategory(currentCategory)
+            } catch (e: Exception) {
+
             }
         }
     }
+
 
     private suspend fun mergeSneakersWithFavorites(category: String): NetworkResponseSneakers<List<SneakersResponse>> {
         val allSneakersResult = sneakersUseCase.getAllSneakers()
