@@ -173,9 +173,7 @@ fun FavoriteContent(
                 onFavoriteClick = { _, isFavorite ->
                     onFavoriteClick(sneaker.id, isFavorite)
                 },
-                onAddToCart = {_, inCart ->
-                    inCartClick(sneaker.id, inCart)
-                },
+                onAddToCart = inCartClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(0.65f)

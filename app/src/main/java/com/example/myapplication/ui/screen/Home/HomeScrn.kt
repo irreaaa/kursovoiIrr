@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.screen.Home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -108,21 +110,17 @@ fun HomeScreenContent(paddingValues: PaddingValues, viewModel: PopularViewModel,
             TextField(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(top = 16.dp, bottom = 24.dp),
+                    .padding(top = 16.dp, bottom = 14.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Brush.linearGradient(listOf(Color(0xFFC189A5), Color(0xFFFFE5F2)))),
                 value = message.value,
                 onValueChange = { message.value = it },
                 placeholder = { Text("Поиск") },
-//                leadingIcon = {
-//                    Icon(
-//                        painter = painterResource(R.drawable.finder),
-//                        contentDescription = null,
-//                        //modifier = Modifier.size(20.dp)
-//                    )
-//                },
+
                 shape = RoundedCornerShape(12.dp),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color(0xFFFCD7EA),
-                    unfocusedContainerColor = MatuleTheme.colors.block,
+                    unfocusedContainerColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent
                 )
