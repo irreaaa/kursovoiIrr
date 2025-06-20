@@ -11,23 +11,33 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +51,7 @@ import androidx.navigation.NavController
 import com.example.myapplication.Listing
 import com.example.myapplication.Popular
 import com.example.myapplication.R
+import com.example.myapplication.Search
 import com.example.myapplication.data.remote.network.response.NetworkResponseSneakers
 import com.example.myapplication.data.remote.network.response.SneakersResponse
 import com.example.myapplication.ui.screen.Popular.PopularViewModel
@@ -71,6 +82,8 @@ fun HomeScreen(navController: NavController) {
 fun HomeScreenContent(paddingValues: PaddingValues, viewModel: PopularViewModel, navController: NavController) {
     val message = remember { mutableStateOf("") }
     val sneakersState by viewModel.sneakersState.collectAsState()
+    var searchQuery by remember { mutableStateOf("") }
+
     LaunchedEffect(Unit) {
         viewModel.fetchSneakersByCategory("Популярное")
     }
@@ -83,7 +96,57 @@ fun HomeScreenContent(paddingValues: PaddingValues, viewModel: PopularViewModel,
             .padding(horizontal = 20.dp)
     ) {
 
-        Spacer(modifier = Modifier.width(20.dp).height(45.dp))
+        val message = remember { mutableStateOf("") }
+        Spacer(modifier = Modifier.width(20.dp).height(15.dp))
+
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 5.dp, vertical =16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TextField(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(top = 16.dp, bottom = 24.dp),
+                value = message.value,
+                onValueChange = { message.value = it },
+                placeholder = { Text("Поиск") },
+//                leadingIcon = {
+//                    Icon(
+//                        painter = painterResource(R.drawable.finder),
+//                        contentDescription = null,
+//                        //modifier = Modifier.size(20.dp)
+//                    )
+//                },
+                shape = RoundedCornerShape(12.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color(0xFFFCD7EA),
+                    unfocusedContainerColor = MatuleTheme.colors.block,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent
+                )
+            )
+
+            Spacer(modifier = Modifier.width(1.dp))
+
+            IconButton(
+                onClick = {
+                    navController.currentBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("searchQuery", message.value)
+                    navController.navigate(route = Search)
+                }
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.search),
+                    contentDescription = null,
+                    modifier = Modifier.size(50.dp)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(20.dp).height(1.dp))
 
         Column(modifier = Modifier.padding(start = 4.dp)) {
             Text(
@@ -120,7 +183,15 @@ fun HomeScreenContent(paddingValues: PaddingValues, viewModel: PopularViewModel,
 
         when (sneakersState) {
             is NetworkResponseSneakers.Success -> {
-                val sneakers = (sneakersState as NetworkResponseSneakers.Success<List<SneakersResponse>>).data
+                val allSneakers = (sneakersState as NetworkResponseSneakers.Success<List<SneakersResponse>>).data
+                val sneakers = if (searchQuery.isBlank()) {
+                    allSneakers
+                } else {
+                    allSneakers.filter {
+                        it.name.contains(searchQuery, ignoreCase = true) ||
+                                it.description?.contains(searchQuery, ignoreCase = true) == true
+                    }
+                }
                 Column(
                     modifier = Modifier.padding(start = 4.dp)
                 ) {

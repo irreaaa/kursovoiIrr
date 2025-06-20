@@ -26,6 +26,7 @@ import com.example.myapplication.data.remote.network.response.NetworkResponseSne
 import com.example.myapplication.ui.screen.Cart.OrderConfirmationScreen
 import com.example.myapplication.ui.screen.Favourite.FavoriteScrn
 import com.example.myapplication.ui.screen.Home.HomeScreen
+import com.example.myapplication.ui.screen.Home.SearchResultsScreen
 import com.example.myapplication.ui.screen.Listing.ListingScrn
 import com.example.myapplication.ui.screen.Notif.NotifScrn
 import com.example.myapplication.ui.screen.Otp.OtpScrn
@@ -123,6 +124,32 @@ class MainActivity : ComponentActivity() {
                             navController)
                     }
 
+                    composable<Search> {
+                        val viewModel: PopularViewModel = koinViewModel()
+                        val searchQuery = navController
+                            .previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.get<String>("searchQuery")
+                            ?: ""
+
+                        val sneakersState by viewModel.sneakersState.collectAsState()
+                        val sneakers = (sneakersState as? NetworkResponseSneakers.Success)?.data.orEmpty()
+
+                        val filtered = sneakers.filter {
+                            it.name.contains(searchQuery, ignoreCase = true) ||
+                                    it.description?.contains(searchQuery, ignoreCase = true) == true
+                        }
+
+                        SearchResultsScreen(
+                            navController = navController,
+                            searchQuery = searchQuery,
+                            sneakers = filtered,
+                            onFavoriteClick = { id, isFavorite -> viewModel.toggleFavorite(id, isFavorite) },
+                            onAddToCart = { id, inCart -> viewModel.toggleCart(id, inCart) }
+                        )
+                    }
+
+
                     composable<Popular> {
                         PopularScrn(navController)
                     }
@@ -217,3 +244,5 @@ object Cart
 object Notif
 @Serializable
 object OrderConfirmation
+@Serializable
+object Search
