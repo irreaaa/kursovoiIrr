@@ -5,16 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -35,21 +30,14 @@ fun CartItemCard(
     modifier: Modifier = Modifier,
     onQuantityChanged: (Int, Int) -> Unit,
     onDeleteClick: (Int) -> Unit
-){
+) {
     val context = LocalContext.current
     val imageRes = context.resources.getIdentifier(sneaker.imageUrl, "drawable", context.packageName)
 
     var offsetX by remember { mutableStateOf(0f) }
-    var count by remember { mutableStateOf(1) }
-    var localCount by remember { mutableStateOf(count) }
-
-    LaunchedEffect(key1 = count) {
-        localCount = count
-    }
 
     fun updateCount(newCount: Int) {
         if (newCount >= 1) {
-            localCount = newCount
             onQuantityChanged(sneaker.id, newCount)
         }
     }
@@ -94,8 +82,7 @@ fun CartItemCard(
                 .fillMaxWidth()
         ) {
             Row(
-                modifier = Modifier
-                    .padding(12.dp),
+                modifier = Modifier.padding(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
@@ -106,7 +93,9 @@ fun CartItemCard(
                         .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Fit
                 )
+
                 Spacer(modifier = Modifier.width(22.dp))
+
                 Column(
                     modifier = Modifier
                         .weight(1f)
@@ -127,22 +116,18 @@ fun CartItemCard(
                     )
                 }
 
-//                Column(
-//                    horizontalAlignment = Alignment.CenterHorizontally
-//                ) {
-//                    IconButton(onClick = { updateCount(count + 1) }) {
-//                        Icon(painterResource(R.drawable.ic_minus), contentDescription = "+")
-//                    }
-//                    Text("$count", fontSize = 18.sp, color = MatuleTheme.colors.accent)
-//                    IconButton(onClick = { updateCount(count - 1) }) {
-//                        Icon(painterResource(R.drawable.ic_plus), contentDescription = "-")
-//                    }
-//                }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    IconButton(onClick = { updateCount(count + 1) }) {
+                        Icon(painterResource(R.drawable.ic_pluss), contentDescription = "+")
+                    }
+                    Text("$count", fontSize = 18.sp, color = MatuleTheme.colors.accent)
+                    IconButton(onClick = { updateCount(count - 1) }) {
+                        Icon(painterResource(R.drawable.ic_minus), contentDescription = "-")
+                    }
+                }
             }
         }
     }
 }
-
-
-
-//colors = listOf(Color(0xFFC189A5), Color(0xFFFFE5F2))

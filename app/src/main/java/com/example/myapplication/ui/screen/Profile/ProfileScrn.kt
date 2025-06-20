@@ -9,6 +9,8 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,10 +35,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProfileMenuScreen(
     navController: NavController,
-    userName: String,
+    viewModel: ProfileViewModel,
     authUseCase: AuthUseCase
 ) {
     val context = LocalContext.current
+    val userName by viewModel.userName.collectAsState()
 
     Column(
         modifier = Modifier

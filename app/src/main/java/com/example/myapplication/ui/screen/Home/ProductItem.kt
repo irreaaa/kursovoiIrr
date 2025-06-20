@@ -111,7 +111,7 @@ fun ProductItem(
                     lineHeight = 17.sp
                 ),
                 color = Color.Black,
-                modifier = Modifier.padding(bottom = 14.dp),
+                modifier = Modifier.padding(bottom = 10.dp),
                 maxLines = 2
             )
 
@@ -134,7 +134,7 @@ fun ProductItem(
             onClick = { onAddToCart(sneaker.id, !sneaker.inCart) },
             modifier = Modifier
                 .align(Alignment.End)
-                .size(40.dp)
+                .size(50.dp)
         ) {
             Image(
                 painter = painterResource(

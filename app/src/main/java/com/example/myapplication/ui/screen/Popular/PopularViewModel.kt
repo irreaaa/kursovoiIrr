@@ -12,6 +12,7 @@ import com.example.myapplication.data.repository.SneakersRepository
 import com.example.myapplication.domain.usecase.CartUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PopularViewModel(
@@ -64,7 +65,7 @@ class PopularViewModel(
         currentCategory = category
         viewModelScope.launch {
             _sneakersState.value = NetworkResponseSneakers.Loading
-            _sneakersState.value = mergeSneakersWithFavorites(category)
+            _sneakersState.value = mergeSneakersWithFavoritesAndCart(category)
         }
     }
 
@@ -86,52 +87,32 @@ class PopularViewModel(
                 } else {
                     sneakersRepository.removeFromCart(sneakerId)
                 }
-                _cartState.value = NetworkResponseSneakers.Loading
                 fetchCart()
+                fetchSneakersByCategory(currentCategory)
             } catch (e: Exception) {
-                Log.e("Cart", "Ошибка при удалении из корзины", e)
+                Log.e("Cart", "Ошибка при изменении корзины", e)
             }
         }
     }
 
-
-    private suspend fun mergeSneakersWithFavorites(category: String): NetworkResponseSneakers<List<SneakersResponse>> {
+    private suspend fun mergeSneakersWithFavoritesAndCart(category: String): NetworkResponseSneakers<List<SneakersResponse>> {
         val allSneakersResult = sneakersUseCase.getAllSneakers()
         val favoritesResult = favoriteUseCase.getFavorites()
-
-        if (allSneakersResult is NetworkResponseSneakers.Success &&
-            favoritesResult is NetworkResponseSneakers.Success) {
-
-            val allSneakers = allSneakersResult.data
-            val favoriteIds = favoritesResult.data.map { it.id }.toSet()
-
-            val merged = allSneakers.map {
-                it.copy(isFavorite = it.id in favoriteIds)
-            }
-
-            val filtered = when (category) {
-                "Все" -> merged
-                "Популярное" -> merged.filter { it.isPopular }
-                else -> merged.filter { it.category.equals(category, ignoreCase = true) }
-            }
-
-            return NetworkResponseSneakers.Success(filtered)
-        }
-
-        return NetworkResponseSneakers.Error("Ошибка при получении данных с сервера")
-    }
-
-    private suspend fun mergeSneakersWithCart(category: String): NetworkResponseSneakers<List<SneakersResponse>> {
-        val allSneakersResult = sneakersUseCase.getAllSneakers()
         val cartResult = cartUseCase.getCart()
+
         if (allSneakersResult is NetworkResponseSneakers.Success &&
+            favoritesResult is NetworkResponseSneakers.Success &&
             cartResult is NetworkResponseSneakers.Success) {
 
             val allSneakers = allSneakersResult.data
+            val favoriteIds = favoritesResult.data.map { it.id }.toSet()
             val cartIds = cartResult.data.map { it.id }.toSet()
 
             val merged = allSneakers.map {
-                it.copy(inCart = it.id in cartIds)
+                it.copy(
+                    isFavorite = it.id in favoriteIds,
+                    inCart = it.id in cartIds
+                )
             }
 
             val filtered = when (category) {
@@ -145,4 +126,14 @@ class PopularViewModel(
 
         return NetworkResponseSneakers.Error("Ошибка при получении данных с сервера")
     }
+
+    val _cartCounts = MutableStateFlow<Map<Int, Int>>(emptyMap())
+
+    fun updateItemCount(itemId: Int, newCount: Int) {
+        _cartCounts.update { current ->
+            current.toMutableMap().apply { put(itemId, newCount) }
+        }
+    }
+
+
 }

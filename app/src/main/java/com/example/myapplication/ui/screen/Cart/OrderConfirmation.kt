@@ -1,27 +1,32 @@
 package com.example.myapplication.ui.screen.Cart
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.myapplication.OrderConfirmation
 import com.example.myapplication.R
 import com.example.myapplication.data.remote.network.response.SneakersResponse
 import com.example.myapplication.ui.screen.component.AuthButton
@@ -43,17 +48,28 @@ fun OrderConfirmationScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Оформление заказа", fontSize = 20.sp) },
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Оформление заказа",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Black
+                    )
+                },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Image(
+                    IconButton(
+                        onClick = { navController.popBackStack() },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
                             painter = painterResource(R.drawable.back_arrow),
                             contentDescription = null,
+                            tint = Color.Black,
                             modifier = Modifier.size(24.dp)
                         )
                     }
-                }
+                },
             )
         }
     ) { paddingValues ->
@@ -63,7 +79,7 @@ fun OrderConfirmationScreen(
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            Text("Ваш заказ:", style = MaterialTheme.typography.titleMedium, color = Color.Black)
+            Text("Ваш заказ:", style = MaterialTheme.typography.headlineMedium, color = Color(0xFF660033))
             Spacer(modifier = Modifier.height(8.dp))
             LazyColumn(modifier = Modifier.weight(1f)) {
                 items(cartItems) { item ->
@@ -86,7 +102,7 @@ fun OrderConfirmationScreen(
                 Text("Доставка:", fontSize = 16.sp)
                 Text("₽$deliveryCost", fontSize = 16.sp)
             }
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(15.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween

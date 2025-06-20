@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class AuthUseCase(
-    private val localStorage: LocalStorage,
+    val localStorage: LocalStorage,
     private val authRepository: AuthRepository,
     private val dataStore: DataStoreOnBoarding
 ) {
@@ -38,6 +38,7 @@ class AuthUseCase(
         try {
             val result = authRepository.signUp(registrationRequest)
             localStorage.setToken(result.token)
+            localStorage.setUserName(registrationRequest.userName)
             emit(NetworkResponse.Success(result))
         } catch (e: Exception) {
             emit(NetworkResponse.Error(e.message ?: "Unknown Error"))
@@ -49,6 +50,7 @@ class AuthUseCase(
         try {
             val result = authRepository.signIn(loginRequest)
             localStorage.setToken(result.token)
+            localStorage.setUserName(loginRequest.userName)
             emit(NetworkResponse.Success(result))
         } catch (e: Exception) {
             emit(NetworkResponse.Error(e.message ?: "Unknown Error"))

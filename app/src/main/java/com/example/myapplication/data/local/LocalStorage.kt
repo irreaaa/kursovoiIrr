@@ -13,9 +13,14 @@ class LocalStorage(private val context: Context) {
 
     private val tokenKey = stringPreferencesKey("token_key")
     private val onboardingKey = booleanPreferencesKey("onboarding_key")
+    private val userNameKey = stringPreferencesKey("user_name_key")
 
     val tokenFlow: Flow<String> = context.datastore.data.map { preferences ->
         preferences[tokenKey] ?: ""
+    }
+
+    val userNameFlow: Flow<String> = context.datastore.data.map { preferences ->
+        preferences[userNameKey] ?: ""
     }
 
     val onBoardingShownFlow: Flow<Boolean> = context.datastore.data.map { preferences ->
@@ -28,9 +33,21 @@ class LocalStorage(private val context: Context) {
         }
     }
 
+    suspend fun setUserName(userName: String) {
+        context.datastore.edit { preferences ->
+            preferences[userNameKey] = userName
+        }
+    }
+
     suspend fun clearToken() {
         context.datastore.edit { preferences ->
             preferences.remove(tokenKey)
+        }
+    }
+
+    suspend fun clearUserName() {
+        context.datastore.edit { preferences ->
+            preferences.remove(userNameKey)
         }
     }
 

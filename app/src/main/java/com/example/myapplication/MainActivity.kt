@@ -6,9 +6,18 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,6 +34,7 @@ import com.example.myapplication.ui.screen.Otp.OtpScrn
 import com.example.myapplication.ui.screen.Popular.PopularScrn
 import com.example.myapplication.ui.screen.Popular.PopularViewModel
 import com.example.myapplication.ui.screen.Profile.ProfileMenuScreen
+import com.example.myapplication.ui.screen.Profile.ProfileViewModel
 import com.example.myapplication.ui.screen.RecoverPassword.RecoverPasswordScrn
 import com.example.myapplication.ui.screen.SignIn.SignInScrn
 import com.example.myapplication.ui.screen.SignUp.SignUpScrn
@@ -132,9 +142,10 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable<Profile> {
+                        val viewModel: ProfileViewModel = koinViewModel()
                         ProfileMenuScreen(
                             navController = navController,
-                            userName = "Пользователь",
+                            viewModel = viewModel,
                             authUseCase = authUseCase
                         )
                     }
@@ -146,18 +157,32 @@ class MainActivity : ComponentActivity() {
                     composable<OrderConfirmation> {
                         val viewModel: PopularViewModel = koinViewModel()
                         val cartState = viewModel.cartState.collectAsState().value
-                        val cartCounts = remember { mutableStateMapOf<Int, Int>() }
+                        val cartCounts by viewModel._cartCounts.collectAsState()
 
-                        if (cartState is NetworkResponseSneakers.Success) {
-                            OrderConfirmationScreen(
-                                navController = navController,
-                                cartItems = cartState.data,
-                                cartCounts = cartCounts,
-                                deliveryCost = 60.20f
-                            )
+                        when (cartState) {
+                            is NetworkResponseSneakers.Success -> {
+                                OrderConfirmationScreen(
+                                    navController = navController,
+                                    cartItems = cartState.data,
+                                    cartCounts = cartCounts,
+                                    deliveryCost = 60.20f
+                                )
+                            }
+
+                            is NetworkResponseSneakers.Error -> {
+                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Text("Ошибка загрузки данных", color = Color.Red)
+                                }
+                            }
+
+                            NetworkResponseSneakers.Loading -> {
+                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    CircularProgressIndicator()
+                                }
+                            }
                         }
-                    }
 
+                    }
                 }
             }
         }

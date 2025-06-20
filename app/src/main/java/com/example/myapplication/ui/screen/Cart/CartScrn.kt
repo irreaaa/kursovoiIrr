@@ -1,19 +1,19 @@
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -27,7 +27,6 @@ import com.example.myapplication.ui.screen.component.AuthButton
 import com.example.myapplication.ui.theme.MatuleTheme
 import org.koin.androidx.compose.koinViewModel
 
-
 const val deliveryCost = 60.20f
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,27 +35,21 @@ fun CartScrn(
     navController: NavController,
     viewModel: PopularViewModel = koinViewModel()
 ) {
-
-    val favoritesState by viewModel.favoritesState.collectAsState()
     val cartState by viewModel.cartState.collectAsState()
-
-    val cartCounts = remember { mutableStateMapOf<Int, Int>() }
+    val cartCounts by viewModel.cartCounts.collectAsState()
 
     val purchaseSum = when (cartState) {
         is NetworkResponseSneakers.Success -> {
             val carts = (cartState as NetworkResponseSneakers.Success<List<SneakersResponse>>).data
             carts.sumOf { item ->
                 val count = cartCounts[item.id] ?: 1
-                (item.price ?: 0f).toDouble() * count.toDouble()
-             }.toFloat()
-
+                (item.price ?: 0f).toDouble() * count
+            }.toFloat()
         }
         else -> 0f
     }
 
-
-
-    LaunchedEffect(key1 = Unit) {
+    LaunchedEffect(Unit) {
         viewModel.fetchCart()
     }
 
@@ -64,13 +57,15 @@ fun CartScrn(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text(text = "Корзина", fontSize = 20.sp, fontWeight = FontWeight.Medium, color = Color.Black)
+                    Text(
+                        text = "Корзина",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Black
+                    )
                 },
                 navigationIcon = {
-                    IconButton(
-                        onClick = { navController.popBackStack() },
-                        modifier = Modifier.size(36.dp)
-                    ) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             painter = painterResource(R.drawable.back_arrow),
                             contentDescription = null,
@@ -78,50 +73,106 @@ fun CartScrn(
                             modifier = Modifier.size(24.dp)
                         )
                     }
-                },
+                }
             )
         },
         bottomBar = {
             BoxWithConstraints(Modifier.fillMaxWidth()) {
-                if(maxHeight > 0.dp){
+                if (maxHeight > 0.dp) {
                     val heightOfWhiteRect = maxHeight / 3
 
-                    Surface(color = Color.White, modifier = Modifier
-                        .fillMaxWidth()
-                        .height(heightOfWhiteRect)
-                        .align(Alignment.BottomCenter)){
-
-                        Column(horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.padding(top = 28.dp, start = 15.dp, end = 15.dp)) {
-
-                            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()){
+                    Surface(
+                        color = Color.White,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(heightOfWhiteRect)
+                            .align(Alignment.BottomCenter)
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.padding(top = 28.dp, start = 15.dp, end = 15.dp)
+                        ) {
+                            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                                 Text("Сумма:", style = MaterialTheme.typography.titleMedium, color = MatuleTheme.colors.subTextDark)
-                                Text("₽${purchaseSum}", style = MaterialTheme.typography.titleMedium, color = Color.Black, fontWeight = FontWeight.Bold)
+                                Text("₽$purchaseSum", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                             }
 
                             Spacer(modifier = Modifier.height(10.dp))
 
-                            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()){
+                            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                                 Text("Доставка:", style = MaterialTheme.typography.titleMedium, color = MatuleTheme.colors.subTextDark)
-                                Text("₽$deliveryCost", style = MaterialTheme.typography.titleMedium, color = Color.Black, fontWeight = FontWeight.Bold)
+                                Text("₽$deliveryCost", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                             }
 
                             Spacer(modifier = Modifier.height(10.dp))
-                            HorizontalDivider(modifier = (Modifier.padding(8.dp)), color = Color(0xFFe0adc7))
+                            HorizontalDivider(Modifier.padding(8.dp), color = Color(0xFFe0adc7))
                             Spacer(modifier = Modifier.height(10.dp))
 
-                            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()){
-                                Text("Итого:", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Color.Black)
-                                Text("₽${(purchaseSum + deliveryCost)}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MatuleTheme.colors.accent)
+                            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                Text("Итого:", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                                Text("₽${purchaseSum + deliveryCost}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MatuleTheme.colors.accent)
                             }
 
+                            var showDialog by remember { mutableStateOf(false) }
 
-                            AuthButton(
-                                onClick = {
+                            AuthButton(onClick = {
+                                val carts = (cartState as? NetworkResponseSneakers.Success)?.data ?: emptyList()
+                                if (carts.isEmpty()) {
+                                    showDialog = true
+                                } else {
                                     navController.navigate(route = OrderConfirmation)
                                 }
-                            ) {
+                            }) {
                                 Text(stringResource(R.string.cart_button))
                             }
+
+                            if (showDialog) {
+                                AlertDialog(
+                                    onDismissRequest = { showDialog = false },
+                                    title = {
+                                        Column(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(50.dp)
+                                                    .clip(CircleShape)
+                                                    .background(color = Color(0xFFFFFFFF)),
+                                                contentAlignment = Alignment.Center
+
+                                            ){
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.flowers),
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(65.dp),
+
+                                                    )
+                                            }
+
+                                            Text(
+                                                text = "В корзине ничего нет",
+                                                modifier = Modifier.padding(top = 18.dp),
+                                                style = androidx.compose.material3.MaterialTheme.typography.titleLarge
+                                            )
+
+                                            Text(
+                                                text = "Нельзя оформить пустой заказ",
+                                                modifier = Modifier.fillMaxWidth().wrapContentWidth(),
+                                                style = androidx.compose.material3.MaterialTheme.typography.bodyLarge,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                    },confirmButton = {
+                                        TextButton(onClick = { showDialog = false }) {
+                                            Text("OK")
+                                        }
+                                    },
+                                )
+                            }
+
+
                             Spacer(Modifier.padding(bottom = 60.dp))
                         }
                     }
@@ -132,10 +183,11 @@ fun CartScrn(
         when (cartState) {
             is NetworkResponseSneakers.Success -> {
                 val carts = (cartState as NetworkResponseSneakers.Success<List<SneakersResponse>>).data
-
                 if (carts.isEmpty()) {
                     Column(
-                        modifier = Modifier.fillMaxSize().padding(paddingValues),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -150,33 +202,22 @@ fun CartScrn(
                     CartContent(
                         modifier = Modifier.padding(paddingValues),
                         cart = carts,
-                        onItemClick = { id ->
-                        },
-                        onFavoriteClick = { id, isFavorite ->
-                            viewModel.toggleFavorite(id, isFavorite)
-                        },
-                        inCartClick = {id, inCart ->
-                            viewModel.toggleCart(id, inCart)
-                        },
-                        navController = navController,
-                        cartCounts
+                        onItemClick = {},
+                        onFavoriteClick = { id, isFavorite -> viewModel.toggleFavorite(id, isFavorite) },
+                        inCartClick = { id, inCart -> viewModel.toggleCart(id, inCart) },
+                        onQuantityChanged = { id, newCount -> viewModel.updateItemCount(id, newCount) },
+                        cartCounts = cartCounts
                     )
                 }
             }
             is NetworkResponseSneakers.Error -> {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Text(
-                        text = "Ошибка загрузки",
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                Box(Modifier.fillMaxSize()) {
+                    Text("Ошибка загрузки", modifier = Modifier.align(Alignment.Center))
                 }
             }
             NetworkResponseSneakers.Loading -> {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Text(
-                        text = "Загрузка...",
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                Box(Modifier.fillMaxSize()) {
+                    Text("Загрузка...", modifier = Modifier.align(Alignment.Center))
                 }
             }
         }
@@ -190,29 +231,23 @@ fun CartContent(
     onItemClick: (Int) -> Unit,
     onFavoriteClick: (Int, Boolean) -> Unit,
     inCartClick: (Int, Boolean) -> Unit,
-    navController: NavController,
-    cartCounts: MutableMap<Int, Int>
+    onQuantityChanged: (Int, Int) -> Unit,
+    cartCounts: Map<Int, Int>
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 150.dp)
     ) {
-        items(
-            items = cart,
-            key = { it.id }
-        ) { sneaker ->
+        items(items = cart, key = { it.id }) { sneaker ->
             CartItemCard(
                 sneaker = sneaker,
                 count = cartCounts[sneaker.id] ?: 1,
-                onQuantityChanged = { id, newCount ->
-                    cartCounts[id] = newCount
-                },
+                onQuantityChanged = onQuantityChanged,
                 onDeleteClick = { id ->
                     inCartClick(id, false)
-                    cartCounts.remove(id)
+                    onQuantityChanged(id, 0)
                 }
             )
-
         }
     }
 }

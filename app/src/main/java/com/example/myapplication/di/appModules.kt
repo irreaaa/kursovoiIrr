@@ -13,6 +13,7 @@ import com.example.myapplication.ui.screen.Popular.PopularViewModel
 import com.example.myapplication.ui.screen.SignIn.SignInViewModel
 import com.example.myapplication.ui.screen.SignUp.SignUpViewModel
 import com.example.myapplication.ui.screen.Welcome.SplashViewModel
+import com.example.myapplication.ui.screen.Profile.ProfileViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -41,4 +42,5 @@ val appModules = module {
     viewModelOf(::SignInViewModel)
     viewModelOf(::PopularViewModel)
     viewModelOf(::SplashViewModel)
+    viewModelOf(::ProfileViewModel)
 }
