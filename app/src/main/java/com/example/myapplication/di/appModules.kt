@@ -15,16 +15,16 @@ import com.example.myapplication.ui.screen.SignUp.SignUpViewModel
 import com.example.myapplication.ui.screen.Welcome.SplashViewModel
 import com.example.myapplication.ui.screen.Profile.ProfileViewModel
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val appModules = module {
 
     single { LocalStorage(androidContext()) }
-
     single<AuthRepository> { AuthRepository(get()) }
     single<SneakersRepository> { SneakersRepository(get()) }
-
     single { AuthInterceptor(get()) }
     single { RetrofitClient(get()) }
     single<Auth> { get<RetrofitClient>().auth }
@@ -38,9 +38,17 @@ val appModules = module {
     single { TokenUseCase(get()) }
     single { OnBoardingUseCase(get()) }
 
+    viewModel {
+        PopularViewModel(
+            sneakersUseCase = get(),
+            favoriteUseCase = get(),
+            cartUseCase = get(),
+            sneakersRepository = get()
+        )
+    }
+
     viewModelOf(::SignUpViewModel)
     viewModelOf(::SignInViewModel)
-    viewModelOf(::PopularViewModel)
     viewModelOf(::SplashViewModel)
     viewModelOf(::ProfileViewModel)
 }

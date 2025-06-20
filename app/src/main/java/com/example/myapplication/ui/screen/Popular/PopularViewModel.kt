@@ -55,11 +55,15 @@ class PopularViewModel(
             if (result is NetworkResponseSneakers.Success) {
                 val modified = result.data.map { it.copy(inCart = true) }
                 _cartState.value = NetworkResponseSneakers.Success(modified)
+
+                val counts = modified.associate { it.id to (_cartCounts.value[it.id] ?: 1) }
+                _cartCounts.value = counts
             } else {
                 _cartState.value = result
             }
         }
     }
+
 
     fun fetchSneakersByCategory(category: String) {
         currentCategory = category
@@ -134,6 +138,4 @@ class PopularViewModel(
             current.toMutableMap().apply { put(itemId, newCount) }
         }
     }
-
-
 }

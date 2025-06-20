@@ -50,14 +50,14 @@ class AuthUseCase(
         try {
             val result = authRepository.signIn(loginRequest)
             localStorage.setToken(result.token)
-            localStorage.setUserName(loginRequest.userName)
+            localStorage.setUserName(result.userName)
             emit(NetworkResponse.Success(result))
         } catch (e: Exception) {
             emit(NetworkResponse.Error(e.message ?: "Unknown Error"))
         }
     }
 
-        suspend fun logout(context: Context) {
+    suspend fun logout(context: Context) {
             dataStore.clearAuthState()
         }
 }

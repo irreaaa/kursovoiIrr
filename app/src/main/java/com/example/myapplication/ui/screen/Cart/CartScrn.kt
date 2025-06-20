@@ -36,7 +36,7 @@ fun CartScrn(
     viewModel: PopularViewModel = koinViewModel()
 ) {
     val cartState by viewModel.cartState.collectAsState()
-    val cartCounts by viewModel.cartCounts.collectAsState()
+    val cartCounts by viewModel._cartCounts.collectAsState()
 
     val purchaseSum = when (cartState) {
         is NetworkResponseSneakers.Success -> {
@@ -121,6 +121,10 @@ fun CartScrn(
                                 if (carts.isEmpty()) {
                                     showDialog = true
                                 } else {
+                                    navController.currentBackStackEntry?.savedStateHandle?.apply {
+                                        set("cart_items", carts)
+                                        set("cart_counts", cartCounts)
+                                    }
                                     navController.navigate(route = OrderConfirmation)
                                 }
                             }) {

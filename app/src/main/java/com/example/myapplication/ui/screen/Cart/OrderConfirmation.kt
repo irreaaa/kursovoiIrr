@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.screen.Cart
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -44,6 +46,10 @@ fun OrderConfirmationScreen(
         val count = cartCounts[item.id] ?: 1
         (item.price ?: 0f).toDouble() * count.toDouble()
     }.toFloat()
+
+    LaunchedEffect(cartCounts) {
+        Log.d("OrderConfirmation", "Текущее количество: $cartCounts")
+    }
 
 
     Scaffold(
