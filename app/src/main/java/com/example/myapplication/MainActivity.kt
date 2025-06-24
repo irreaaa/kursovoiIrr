@@ -2,6 +2,8 @@ package com.example.myapplication
 
 import CartScrn
 import SlidesScrn
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,6 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -48,6 +52,17 @@ import org.koin.androidx.compose.koinViewModel
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                    101
+                )
+            }
+        }
+
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
@@ -142,8 +157,6 @@ class MainActivity : ComponentActivity() {
 
                         SearchResultsScreen(
                             navController = navController,
-                            searchQuery = searchQuery,
-                            sneakers = filtered,
                             onFavoriteClick = { id, isFavorite -> viewModel.toggleFavorite(id, isFavorite) },
                             onAddToCart = { id, inCart -> viewModel.toggleCart(id, inCart) }
                         )

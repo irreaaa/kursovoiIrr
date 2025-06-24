@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,6 +23,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,6 +41,7 @@ import com.example.myapplication.data.remote.network.response.SneakersResponse
 import com.example.myapplication.ui.screen.Home.ProductItem
 import com.example.myapplication.ui.screen.Popular.PopularViewModel
 import com.example.myapplication.ui.screen.component.BottomProfile
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,24 +50,21 @@ fun FavoriteScrn(
     navController: NavController,
     viewModel: PopularViewModel = koinViewModel()
 ) {
-    val favoritesState by viewModel.favoritesState.collectAsState()
-    val cartState by viewModel.cartState.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+    var favoritesWithCart by remember { mutableStateOf<List<SneakersResponse>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(true) }
 
-
-    LaunchedEffect(key1 = Unit) {
-        viewModel.fetchFavorites()
+    LaunchedEffect(Unit) {
+        isLoading = true
+        favoritesWithCart = viewModel.getFavoritesMergedWithCart()
+        isLoading = false
     }
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text(
-                        text = "Избранное",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.Black
-                    )
+                    Text("Избранное", fontSize = 20.sp, fontWeight = FontWeight.Medium)
                 },
                 navigationIcon = {
                     IconButton(
@@ -75,78 +78,49 @@ fun FavoriteScrn(
                             modifier = Modifier.size(24.dp)
                         )
                     }
-                },
-                actions = {
-                    IconButton(
-                        onClick = {  },
-                        modifier = Modifier
-                            .padding(end = 2.dp)
-                            .size(64.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.new_empty_heart),
-                            contentDescription = null,
-                            modifier = Modifier.size(28.dp),
-                            tint = Color.Unspecified
-                        )
-                    }
                 }
             )
         },
         bottomBar = { BottomProfile(navController) }
     ) { paddingValues ->
-        when (favoritesState) {
-            is NetworkResponseSneakers.Success -> {
-                val favorites = (favoritesState as NetworkResponseSneakers.Success<List<SneakersResponse>>).data
 
-                if (favorites.isEmpty()) {
-                    Column(
-                        modifier = Modifier.fillMaxSize().padding(paddingValues),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "В избранных пока пусто",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Normal,
-                            color = Color(0xFFC189A5)
-                        )
+        if (isLoading) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+        } else if (favoritesWithCart.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("В избранных пока пусто", fontSize = 18.sp, color = Color(0xFFC189A5))
+            }
+        } else {
+            FavoriteContent(
+                modifier = Modifier.padding(paddingValues),
+                favorites = favoritesWithCart,
+                onItemClick = { },
+                onFavoriteClick = { id, isFavorite ->
+                    viewModel.toggleFavorite(id, isFavorite)
+                    coroutineScope.launch {
+                        favoritesWithCart = viewModel.getFavoritesMergedWithCart()
                     }
-                } else {
-                FavoriteContent(
-                    modifier = Modifier.padding(paddingValues),
-                    favorites = favorites,
-                    onItemClick = { id ->
-                    },
-                    onFavoriteClick = { id, isFavorite ->
-                        viewModel.toggleFavorite(id, isFavorite)
-                    },
-                    inCartClick = {id, inCart ->
-                        viewModel.toggleCart(id, inCart)
-                    },
-                    navController = navController
-                )
-            }
-            }
-            is NetworkResponseSneakers.Error -> {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Text(
-                        text = "Ошибка загрузки",
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-            }
-            NetworkResponseSneakers.Loading -> {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Text(
-                        text = "Загрузка...",
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-            }
+                },
+                inCartClick = { id, inCart ->
+                    viewModel.toggleCart(id, inCart)
+                    coroutineScope.launch {
+                        favoritesWithCart = viewModel.getFavoritesMergedWithCart()
+                    }
+                },
+                navController = navController
+            )
         }
     }
 }
+
+
 
 @Composable
 fun FavoriteContent(

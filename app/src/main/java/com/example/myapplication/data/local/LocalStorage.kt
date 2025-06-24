@@ -14,6 +14,13 @@ class LocalStorage(private val context: Context) {
     private val tokenKey = stringPreferencesKey("token_key")
     private val onboardingKey = booleanPreferencesKey("onboarding_key")
     private val userNameKey = stringPreferencesKey("user_name_key")
+    val emailKey = stringPreferencesKey("user_email_key")
+    val emailFlow: Flow<String> = context.datastore.data.map { preferences ->
+        preferences[emailKey] ?: ""
+    }
+    suspend fun setEmail(email: String) {
+        context.datastore.edit { it[emailKey] = email }
+    }
 
     val tokenFlow: Flow<String> = context.datastore.data.map { preferences ->
         preferences[tokenKey] ?: ""

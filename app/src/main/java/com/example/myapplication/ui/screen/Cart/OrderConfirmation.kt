@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +34,7 @@ import com.example.myapplication.R
 import com.example.myapplication.data.remote.network.response.SneakersResponse
 import com.example.myapplication.ui.screen.component.AuthButton
 import com.example.myapplication.ui.theme.MatuleTheme
+import com.example.myapplication.utils.NotificationUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,6 +53,7 @@ fun OrderConfirmationScreen(
         Log.d("OrderConfirmation", "Текущее количество: $cartCounts")
     }
 
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -118,7 +121,20 @@ fun OrderConfirmationScreen(
             }
             Spacer(modifier = Modifier.height(16.dp))
             AuthButton(
-                onClick = {}
+                onClick = {
+                    val summary = buildString {
+                        append("Вы заказали:\n")
+                        cartItems.forEach { item ->
+                            val count = cartCounts[item.id] ?: 1
+                            append("${item.name} x$count\n")
+                        }
+                        append("Доставка: ₽$deliveryCost\n")
+                        append("Итого: ₽${totalSum + deliveryCost}")
+                    }
+                    Log.d("OrderNotification", "summary:\n$summary")
+
+                    NotificationUtils.showOrderNotification(context, summary)
+                }
             ) {
                 Text(stringResource(R.string.cart_confirm_button))
             }

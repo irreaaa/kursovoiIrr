@@ -138,4 +138,48 @@ class PopularViewModel(
             current.toMutableMap().apply { put(itemId, newCount) }
         }
     }
+
+    suspend fun getAllSneakersMerged(): List<SneakersResponse> {
+        val allSneakersResult = sneakersUseCase.getAllSneakers()
+        val favoritesResult = favoriteUseCase.getFavorites()
+        val cartResult = cartUseCase.getCart()
+
+        if (allSneakersResult is NetworkResponseSneakers.Success &&
+            favoritesResult is NetworkResponseSneakers.Success &&
+            cartResult is NetworkResponseSneakers.Success) {
+
+            val allSneakers = allSneakersResult.data
+            val favoriteIds = favoritesResult.data.map { it.id }.toSet()
+            val cartIds = cartResult.data.map { it.id }.toSet()
+
+            return allSneakers.map {
+                it.copy(
+                    isFavorite = it.id in favoriteIds,
+                    inCart = it.id in cartIds
+                )
+            }
+        }
+
+        return emptyList()
+    }
+
+    suspend fun getFavoritesMergedWithCart(): List<SneakersResponse> {
+        val favoritesResult = favoriteUseCase.getFavorites()
+        val cartResult = cartUseCase.getCart()
+
+        if (favoritesResult is NetworkResponseSneakers.Success &&
+            cartResult is NetworkResponseSneakers.Success
+        ) {
+            val cartIds = cartResult.data.map { it.id }.toSet()
+
+            return favoritesResult.data.map { sneaker ->
+                sneaker.copy(
+                    isFavorite = true, // <-- ВАЖНО!
+                    inCart = sneaker.id in cartIds
+                )
+            }
+        }
+
+        return emptyList()
+    }
 }

@@ -98,7 +98,7 @@ fun HomeScreenContent(paddingValues: PaddingValues, viewModel: PopularViewModel,
             .padding(horizontal = 20.dp)
     ) {
 
-        val message = remember { mutableStateOf("") }
+        var searchQuery by remember { mutableStateOf("") }
         Spacer(modifier = Modifier.width(20.dp).height(15.dp))
 
         Row(
@@ -113,10 +113,9 @@ fun HomeScreenContent(paddingValues: PaddingValues, viewModel: PopularViewModel,
                     .padding(top = 16.dp, bottom = 14.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .background(Brush.linearGradient(listOf(Color(0xFFC189A5), Color(0xFFFFE5F2)))),
-                value = message.value,
-                onValueChange = { message.value = it },
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
                 placeholder = { Text("Поиск") },
-
                 shape = RoundedCornerShape(12.dp),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color(0xFFFCD7EA),
@@ -126,16 +125,18 @@ fun HomeScreenContent(paddingValues: PaddingValues, viewModel: PopularViewModel,
                 )
             )
 
+
             Spacer(modifier = Modifier.width(1.dp))
 
             IconButton(
                 onClick = {
                     navController.currentBackStackEntry
                         ?.savedStateHandle
-                        ?.set("searchQuery", message.value)
+                        ?.set("searchQuery", searchQuery)
                     navController.navigate(route = Search)
                 }
-            ) {
+            )
+            {
                 Image(
                     painter = painterResource(R.drawable.search),
                     contentDescription = null,
